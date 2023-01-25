@@ -34,7 +34,7 @@ class validation():
                     fp1 = int(fp.get('firstPage'))
                     lp1 = int(fp.get('lastPage'))
                 except ValueError as e:
-                    print('page number is blank here, ','Exception message :', e)
+                    print('page number is blank here, ', 'Exception message :', e)
                     pass
                 if fp1 <= lp1:
                     print('validation pass')
@@ -53,8 +53,12 @@ class validation():
     def suffix(self, collectionname: str):
         suffix_failed_id = []
         if collectionname == 'collection':
-            for familyName in collection.find({},{"_id":1,"authors": {"lastname":1}}):
+            for familyName in collection.find({}, {"_id": 1, "authors": {"lastname": 1}}):
                 lname = str(familyName)
-                if  re.findall(r"ber\b", lname):
-                    suffix_failed_id.append(familyName.get('_id'))
+                l = ['Jr','Sr','ber']
+                for i in l:
+                    if re.findall(str(i) + r'\b', lname):
+                        suffix_failed_id.append(familyName.get('_id'))
+                    else:
+                        pass
             return suffix_failed_id

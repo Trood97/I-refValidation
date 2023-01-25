@@ -1,10 +1,10 @@
-import mysql as mysql
-import mysql.connector
+import re
 
-mydb = mysql.connector.connect(
-  host="127.0.0.1",
-  user="sanket",
-  password="test123"
-)
+str = ('Python is a ','programming',' language')
+#search using regex
+x = re.search('language$', str)
 
-mycursor = mydb.cursor()
+if(x!=None):
+	print('The line ends with \'language\'.')
+else:
+	print('The line does not end with \'language\'.')
