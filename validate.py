@@ -1,24 +1,21 @@
 import datetime
 from config import collection
 import re
+
 import string
-from bson.objectid import ObjectId
-
-today = datetime.date.today()
-
-year = today.year
-
-failed_ids = []
 
 
 class validation():
 
     def validateyear(self, collectionname: str):
         pass
+        today = datetime.date.today()
+        year = today.year
+        failed_ids = []
         current_year = year
         if collectionname == 'collection':
             for i in collection.find():
-                print(i)
+                # print(i)
                 if int(i.get('year')) <= current_year:
                     print('validation passed')
                 else:
@@ -55,10 +52,22 @@ class validation():
         if collectionname == 'collection':
             for familyName in collection.find({}, {"_id": 1, "authors": {"lastname": 1}}):
                 lname = str(familyName)
-                l = ['Jr','Sr','ber']
+                l = ['Jr', 'Sr', 'ber']
                 for i in l:
                     if re.findall(str(i) + r'\b', lname):
                         suffix_failed_id.append(familyName.get('_id'))
                     else:
                         pass
             return suffix_failed_id
+
+    def punctuation_for_all(self, collectionnew: str):
+        failed_idspu = []
+        if collectionnew == 'collection':
+            for j in collection.find():
+                lst = ['journalTitle', 'articleTitle', 'bookSeriesTitle', 'bookTitle', 'chapterTitle',
+                       'dataTitle', 'otherTitle', 'statuteTitle', 'familyName', 'publisherName', 'publisherLoc']
+                for item in lst:
+                    stringnew = str(j.get(item))
+                    if stringnew.endswith(':'):
+                        failed_idspu.append(j.get('_id'))
+            return failed_idspu
