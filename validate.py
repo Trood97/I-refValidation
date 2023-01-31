@@ -2,8 +2,6 @@ import datetime
 from config import collection
 import re
 
-import string
-
 
 class validation():
 
@@ -52,6 +50,7 @@ class validation():
         if collectionname == 'collection':
             for familyName in collection.find({}, {"_id": 1, "authors": {"lastname": 1}}):
                 lname = str(familyName)
+                print(lname)
                 l = ['Jr', 'Sr', 'ber']
                 for i in l:
                     if re.findall(str(i) + r'\b', lname):
@@ -60,7 +59,7 @@ class validation():
                         pass
             return suffix_failed_id
 
-    def punctuation_for_all(self, collectionnew: str):
+    def trailing_colon_for_all(self, collectionnew: str):
         failed_idspu = []
         if collectionnew == 'collection':
             for j in collection.find():
@@ -71,3 +70,16 @@ class validation():
                     if stringnew.endswith(':'):
                         failed_idspu.append(j.get('_id'))
             return failed_idspu
+
+    def white_space_leading_or_trailing(self, collectionnew: str):
+        white_space_id = []
+        if collectionnew == 'collection':
+            for j in collection.find():
+
+                lst = ['journalTitle','articleTitle','firstPage','lastname','firstname']
+                for item in lst:
+                    stringnew = str(j.get(item))
+                    if stringnew.startswith(" ") or stringnew.endswith(" "):
+                        white_space_id.append(j.get('_id'))
+            return white_space_id
+

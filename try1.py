@@ -1,4 +1,3 @@
-import string
 from string import *
 
 s = ".$ABC-799-99,_.$^^&*(#;"

@@ -1,5 +1,5 @@
 from validate import validation
-# from try2 import validation
+from try2 import validation
 from config import collection
 
 a = validation()
@@ -13,13 +13,16 @@ a = validation()
 
 # print(a.suffix('collection'))
 
-print(a.punctuation_for_all('collection'))
+# print(a.trailing_colon_for_all('collection'))
+# print(a.white_space_leading_or_trailing('collection'))
+print(a.checking('collection'))
 
 
-#
+
+
 # # doi search---*
 # def func():
-#     search = collection.find({'url': input('enter url')})
+#     search = collection.find({'url': input('enter doi')})
 #     for i in search:
 #         return i
 #

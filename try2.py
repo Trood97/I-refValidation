@@ -1,24 +1,50 @@
 from config import collection
 import re
 
-failed_ids = []
-failed_idspu = []
-failed_idspus = []
-failed_idspusf = []
+failed_ids_title = []
+failed_ids_auth = []
+
 class validation():
-    def punctuation_for_all(self, collectionnew: str):
+    def checking(self, collectionnew: str):
         if collectionnew == 'collection':
-            for j in collection.find():
-                lst = ['journalTitle','articleTitle','bookSeriesTitle','bookTitle','chapterTitle',
-                       'dataTitle','otherTitle','statuteTitle','familyName','publisherName','publisherLoc']
+            for a in collection.find({}, {"_id": 1, 'journalTitle': 1, 'articleTitle': 1,
+                                          'authors': {"lastname": 1, "firstname": 1}}):
+                lst = ['journalTitle', 'articleTitle', 'firstPage','authors']
+                lst2 = ['lastname','firstname']
+                ab = a.get('authors')
+                for auth in ab:
+                    # print(auth)
+                    lst2 = ['lastname','firstname']
+                    for xy in lst2:
+                        auth_string = str(auth.get(xy))
+                        if auth_string.startswith(" ") or auth_string.endswith(" "):
+                            failed_ids_auth.append(a.get('_id'))
+
                 for item in lst:
-                    stringnew = str(j.get(item))
-                    if stringnew.endswith(':'):
-                        failed_idspu.append(j.get('_id'))
-            return failed_idspu
+                    # print(type(a))
+                    stringnew = str(a.get(item))
+                    if stringnew.startswith(" ") or stringnew.endswith(" "):
+                        failed_ids_auth.append(a.get('_id'))
+
+            return failed_ids_auth
 
 
 
 
 
 
+
+
+
+        #
+        # if collectionnew == 'collection':
+        #     for b in collection.find({},{"_id": 1,'authors': {"lastname": 1, "firstname": 1}}):
+        #         ab = b.get('authors')
+        #         for auth in ab:
+        #             # print(auth)
+        #             lst2 = ['lastname','firstname']
+        #             for xy in lst2:
+        #                 auth_string = str(auth.get(xy))
+        #                 if auth_string.startswith(" ") or auth_string.endswith(" "):
+        #                     failed_ids_auth.append(b.get('_id'))
+        #     return failed_ids_auth
