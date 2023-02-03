@@ -1,10 +1,15 @@
 from validate import validation
+from validate2 import validatebookpunct
+from config import collection,collection2
+
 # from try2 import validation
-from config import collection
+
+for i in collection.find():
+    print(i)
 
 a = validation()
 
-# print(a.validateyear('collection'))
+print(a.validateyear('collection'))
 
 # print(a.validatepagenumberseq('collection'))
 
@@ -18,7 +23,20 @@ a = validation()
 
 # print(a.white_space('collection'))
 
-print(a.duplicate('collection'))
+# print(a.duplicate('collection'))
+
+# print(a.validate_pageno_with_e('collection'))
+
+# print(a.familyName_mandatory('collection'))
+
+# print(a.givennameprefix('collection'))
+
+# print(a.familytrailing('collection'))
+
+# print(a.Validation_for_trailing_end_period('collection'))
+
+# validatebookpunct()
+
 
 
 

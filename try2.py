@@ -5,16 +5,19 @@ import re
 
 
 class validation():
-    def duplicate(self, collectionname: str):
+    def Validation_for_trailing_end_period(self,collectionname: str):  # Backlog 426
         if collectionname == 'collection':
-            failed_ids_auth = []
-            for Name in collection.find({}, {"_id": 1, "authors":
-                {"lastname": 1, 'firstname': 1}}):
-                a = Name.get('authors')
-                # print(a)
-                for i in range(0, len(a)):
-                    for j in range(i + 1, len(a)):
-                        if a[i] == a[j]:
-                            print(a[j])
-                            failed_ids_auth.append(Name.get('_id'))
-            return failed_ids_auth
+            failed_id = []
+            for j in collection.find():
+                list = ['articleTitle', 'bookSeriesTitle', 'bookTitle', 'chapterTitle',
+                        'keyword', 'publisherName', 'publisherLoc']
+
+                for item in list:
+                    stringnew = str(j.get(item))
+                    # try:
+                    if stringnew.endswith('.'):
+                        failed_id.append(j.get('_id'))
+                    # except:
+            #         if stringnew.endswith('et.'):
+            #             failed_id.append(j.get('_id'))
+            return failed_id
