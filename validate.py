@@ -1,227 +1,169 @@
 import datetime
-from config import collection,collection2
+from config import collection, collection2
 import re
 
 
 class validation():
 
-        # year
-        def validateyear(self, collectionname: str):
+    # Validation for Publication year
+    def validateyear(self, i: dict):  # ---------------ok--388
+        pass
+        today = datetime.date.today()
+        year = today.year
+        current_year = year
+        if int(i.get('year')) <= current_year:
             pass
-            today = datetime.date.today()
-            year = today.year
-            failed_ids = []
-            current_year = year
-            if collectionname == 'collection':
-                for i in collection.find():
-                    # print(i)
-                    if int(i.get('year')) <= current_year:
-                        print('validation passed')
-                    else:
-                        print('validation failed for page number')
-                        failed_ids.append(i.get('_id'))
-                return failed_ids
+        else:
+            reason = 'Reason: year greater than the current year'
+            return 1, reason
 
-        # page number
-        def validatepagenumberseq(self, collectionname):
-            failed_ids_num = []
-            if collectionname == 'collection':
-                for fp in collection.find():
-                    try:
-                        fp1 = int(fp.get('firstPage'))
-                        lp1 = int(fp.get('lastPage'))
-                    except ValueError as e:
-                        print('page number is blank here, ', 'Exception message :', e)
-                        pass
-                    if fp1 <= lp1:
-                        print('validation pass')
-                    else:
-                        print('validation failed for page number')
-                        failed_ids_num.append(fp.get('_id'))
-            return failed_ids_num
+    # Validation for page numbers
+    def validatepagenumberseq(self, i: dict):  # -------------ok -387
+        fp1 = int(i.get('firstPage'))
+        lp1 = int(i.get('lastPage'))
+        if fp1 <= lp1:
+            pass
+        else:
+            reason = 'Reason:validation failed for page number'
+            return 1, reason
 
-        # period, comma, quotation, exclamation, semicolon  brackets, braces, parenthesis, dash, hyphen, ellipsis, colon, --
-        def punctuation(self, collectionname: str):         #sw
+    # Validation for familyName contains suffix
+    def suffix(self, i: dict):  # sw ------------------------ok-430
+        for familyName in i['authors']:
+            lname = str(familyName.get('lastname'))
+            # print(lname)
+            l = ['Jr', 'Sr', 'ber']
+            for i in l:
+                if lname.endswith(i):
+                    reason = 'validation failed for suffix "jr,sr.",'
+                    return 1, reason
+                else:
+                    pass
 
-            if collectionname == 'collection':
-                for trail in collection.find():
-                    ab = str(trail)
-                    clean = re.sub('\W+\s*', ' ', ab)
-                    print(clean)
+    # Validation for "givenNames" contains honorifics info like Dr,Prof
+    def preffix(self, i: dict):  # sw ------------------ok -429
+        for givenName in i['authors']:
+            fname = str(givenName.get('firstname'))
+            # print(fname)
+            l = ['Dr.', 'Prof.']
+            for a in l:
+                if re.findall(r'\b' + str(a), fname):
+                    reason = 'validation failed for preffix "Dr,Prof",'
+                    return 1, reason
+                else:
+                    pass
 
-        # suffix including Jr.,Sr.
-        def suffix(self, collectionname: str):              #sw
-            suffix_failed_id = []
-            if collectionname == 'collection':
-                for familyName in collection.find({}, {"_id": 1, "authors": {"lastname": 1}}):
-                    lname = str(familyName)
-                    print(lname)
-                    l = ['Jr', 'Sr', 'ber']
-                    for i in l:
-                        if re.findall(str(i) + r'\b', lname):
-                            suffix_failed_id.append(familyName.get('_id'))
-                        else:
-                            pass
-                return suffix_failed_id
+    # Validation for trailing punctuation colon
+    def trailing_colon_for_all(self, i: dict):  # ak-----------------ok ----431
+        for item in i:
+            stringnew = str(i.get(item))
+            if stringnew.endswith(':'):
+                reason = 'failed for colon'
+                return 1, reason
+            else:
+                pass
 
-        # prefix for Dr.,Prof.
-        def preffix(self, collectionname: str):             #sw
-            preffix_failed_id = []
-            if collectionname == 'collection':
-                for givenName in collection.find({}, {"_id": 1, "authors": {"firstname": 1}}):
-                    fname = str(givenName)
-                    # print(fname)
-                    l = ['Dr.', 'Prof.']
-                    for i in l:
-                        if re.findall(r'\b' + str(i), fname):
-                            preffix_failed_id.append(givenName.get('_id'))
-                        else:
-                            pass
-                return preffix_failed_id
+    # Validation for whitespaces
+    def white_space(self, i: dict):  # ak-----------------ok--656
+        for item in i:
+            stringnew = str(i.get(item))
+            if stringnew.startswith(" ") or stringnew.endswith(" "):
+                reason = 'validation failed for white space'
+                return 1, reason
 
-        # Remove trailing colon for all element.
-        def trailing_colon_for_all(self, collectionnew: str):       #ak
-            failed_idspu = []
-            if collectionnew == 'collection':
-                for j in collection.find():
-                    lst = ['journalTitle', 'articleTitle', 'bookSeriesTitle', 'bookTitle', 'chapterTitle',
-                           'dataTitle', 'otherTitle', 'statuteTitle', 'familyName', 'publisherName', 'publisherLoc']
-                    for item in lst:
-                        stringnew = str(j.get(item))
-                        if stringnew.endswith(':'):
-                            failed_idspu.append(j.get('_id'))
-                return failed_idspu
+        for auth in i['authors']:
+            # print(auth)
+            lst2 = ['lastname', 'firstname']
+            for item1 in lst2:
+                auth_string = str(auth.get(item1))
+                if auth_string.startswith(" ") or auth_string.endswith(" "):
+                    reason = 'white sapce validation failed for fname and lname'
+                    return 1, reason
+                else:
+                    pass
 
-        # Check whitespace is present or not.
-        def white_space(self, collectionnew: str):          #ak
-            failed_ids_auth = []
-            if collectionnew == 'collection':
-                for a in collection.find({}, {"_id": 1, 'journalTitle': 1, 'articleTitle': 1,
-                                              'authors': {"lastname": 1, "firstname": 1}}):
-                    lst = ['journalTitle', 'articleTitle', 'firstPage', 'authors']
-                    ab = a.get('authors')
-                    for auth in ab:
-                        lst2 = ['lastname', 'firstname']
-                        for item1 in lst2:
-                            auth_string = str(auth.get(item1))
-                            if auth_string.startswith(" ") or auth_string.endswith(" "):
-                                failed_ids_auth.append(a.get('_id'))
-                                # print(item1,failed_ids_auth)
+    # Validation for "familyName" and "givenNames" in author and editor
+    def duplicate(self, i: dict):  # sw-----------------427
+        for x in i.get('authors'):
+            count = 0
+            check1 = str(x.get('lastname') + x.get('firstname'))
+            for j in i.get('authors'):
+                check2 = str(j.get('lastname') + j.get('firstname'))
+                if check1 == check2:
+                    count += 1
+                    # print('self checking')
+                else:
+                    pass
+            if count > 1:
+                # print('validation has failed for author', check1)
+                reason = 'duplicate author found hear'
+                return 1, reason
 
-                    for item in lst:
-                        stringnew = str(a.get(item))
-                        if stringnew.startswith(" ") or stringnew.endswith(" "):
-                            failed_ids_auth.append(a.get('_id'))
-                            # print(item,failed_ids_auth)
+        #Validation for page numbers with "e"
+    def validate_pageno_with_e(self, i: dict):  # sb ------------------ok but skip --415
+        a = str(i.get('firstPage'))
+        b = str(i.get('lastPage'))
+        z = "[a-z]"
+        if re.findall(str(z) + r"\B", a) or re.findall(str(z) + r"\B", b):  # check for first & last page..
+            reason = 'validation failed for page number with e'
+            return 1, reason
+        else:
+            pass
 
-                return (failed_ids_auth)
+    # Validation for Author name in references, familyname is mandatory
+    def familyName_mandatory(self, i: dict):  # ---------------------done,390
+        for familyName in i['authors']:
+            lname = str(familyName.get('lastname'))
+            if lname == '':
+                reason = 'lastname empty'
+                return 1, reason
+            else:
+                pass
 
-        # check array objects are duplicate or not.
-        def duplicate(self, collectionname: str):           #sw
-            if collectionname == 'collection':
-                failed_ids_auth = []
-                for Name in collection.find({}, {"_id": 1, "authors":
-                    {"lastname": 1, 'firstname': 1}}):
-                    a = Name.get('authors')
-                    for i in range(0, len(a)):
-                        for j in range(i + 1, len(a)):
-                            if a[i] == a[j]:
-                                print(a[j])
-                                failed_ids_auth.append(Name.get('_id'))
-                return failed_ids_auth
+    # Validation for "givenNames" ends with 'prefix'
+    def givennameprefix(self, i: dict):  # ak ------------ok--428
+        for familyName in i['authors']:
+            lname = str(familyName.get('lastname'))
+            prefix = ['van', 'von', 'v.', 'der', 'de', 'del']
+            for i in prefix:
+                if lname.endswith(i):
+                    reason = 'validation failed for givenname '
+                    return 1, reason
+                else:
+                    pass
 
-            # check elocator in first page
+    # Validation for trailing period in familyname
+    def familytrailing(self, i: dict):  # ak ------------------ok--741
+        for familyName in i['authors']:
+            fname = str(familyName.get('firstname'))
+            # print(fname)
+            prefix = ['.']
+            for i in prefix:
+                if fname.endswith(i):
+                    reason = 'validation failed for familyname trailing'
+                    return 1, reason
+                else:
+                    pass
 
-        def validate_pageno_with_e(self, collectionname):          #sb
-            if collectionname == 'collection':
-                list_eloc = []
-                for p in collection.find():
-                    a = str(p.get('firstPage'))
-                    b = str(p.get('lastPage'))
+    # Validation for trailing period in all
+    def Validation_for_trailing_end_period(self, i: dict):  # ----------------ok-426
 
-                    z = "[a-z]"
-
-                    if re.findall(str(z) + r"\B", a) or re.findall(str(z) + r"\B", b):  # check for first & last page..
-                        list_eloc.append(p.get('_id'))
-
-                return list_eloc
-
-        # family name should not be null
-        def familyName_mandatory(self, collectionname: str):        #sb
-            if collectionname == 'collection':
-                failed_id = []
-                for j in collection.find({}, {"_id": 1, 'authors': {"lastname": 1, "firstname": 1}}):
-                    s = j.get('authors')
-                    for ab in s:
-                        lst2 = ['lastname']
-                        for item1 in lst2:
-                            auth_string = str(ab.get(item1))
-                            if auth_string == '':
-                                failed_id.append(j.get('_id'))
-                return failed_id
-
-        # Validation for "givenNames" ends with 'prefix'
-        def givennameprefix(self, collectionnew: str):  # ak
-            failed_idspusdd = []
-            if collectionnew == 'collection':
-                for a in collection.find({}, {"_id": 1, 'authors': {"firstname": 1}}):
-                    lst = {'firstname'}
-                    ab = a.get('authors')
-                    for auth in ab:
-                        lsts = ['firstname']
-                        for item in lsts:
-                            stringnew = str(auth.get(item))
-                            prefix = ['van', 'von', 'v.', 'der', 'de', 'del']
-                            for i in prefix:
-                                if stringnew.endswith(i):
-                                    failed_idspusdd.append(a.get('_id'))
-
-                    for item2 in lst:
-                        stringnew = str(a.get(item2))
-                        if stringnew.endswith("van"):
-                            failed_idspusdd.append(a.get('_id'))
-                return failed_idspusdd
-
-        # Validation for trailing period in familyname
-        def familytrailing(self, collectionnew: str):  # ak
-            failed_idspusdd = []
-            if collectionnew == 'collection':
-                for a in collection.find({}, {"_id": 1, 'authors': {"firstname": 1}}):
-                    lst = {'firstname'}
-                    ab = a.get('authors')
-                    for auth in ab:
-                        for item in lst:
-                            stringnew = str(auth.get(item))
-                            prefix = ['.']
-                            for i in prefix:
-                                if stringnew.endswith(i):
-                                    failed_idspusdd.append(a.get('_id'))
-
-                    for item2 in lst:
-                        stringnew = str(a.get(item2))
-                        if stringnew.endswith("."):
-                            failed_idspusdd.append(a.get('_id'))
-                return failed_idspusdd
-
-        # Validation for trailing period in all
-        def Validation_for_trailing_end_period(self, collectionname: str):  # Backlog 426
-            if collectionname == 'collection':
-                failed_id = []
-                for j in collection.find({}):  # if it is a journal
-                    list = ['articleTitle']
-                    for item in list:
-                        stringnew = str(j.get(item))
-                        if stringnew.endswith('.'):
-                            failed_id.append(j.get('_id'))
-
-                for k in collection2.find():  # if it is book
-                    list1 = ['bookSeriesTitle', 'bookTitle', 'chapterTitle', 'keyword', 'publisherName', 'publisherLoc']
-                    for item in list1:
-                        string1 = str(k.get(item))
-                        if string1.endswith('.'):
-                            failed_id.append(k.get('_id'))
-                return failed_id
-
-
-
-
+        # # if it is a journal
+        # list = ['articleTitle']
+        # for item in list:
+        #
+        #     stringnew = str(i.get(item))
+        #     if stringnew.endswith('.'):
+        #         reason = 'validation failed for articleTitle'
+        #         return 1, reason
+        #     else:pass
+        # for k in collection2.find():  # if it is book
+        list1 = ['articleTitle', 'bookSeriesTitle', 'bookTitle', 'chapterTitle', 'keyword', 'publisherName',
+                 'publisherLoc']
+        for item in list1:
+            string1 = str(i.get(item))
+            if string1.endswith('.'):
+                reason = 'validation failed for book elements.'
+                return 1, reason
+            else:
+                pass

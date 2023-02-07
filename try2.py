@@ -1,23 +1,18 @@
-from config import collection
+import pymongo
 import re
+client = pymongo.MongoClient("mongodb://localhost:27017/")
+db = client['ICODEX-DB01']
+collection = db['Journal1']
+collection2 = db['Book1']
+for i in collection.find():
+        for j in i['authors']:
+            lname = (j.get('lastname'))
+            # print(lname)
+            l = ['Dr.', 'Prof.']
+            for a in l:
+                if re.findall(r'\b' + str(a), lname):
+                    reason = 'validation failed for preffix "Dr,Prof",'
+                    print(reason)
+                else:pass
 
 
-
-
-class validation():
-    def Validation_for_trailing_end_period(self,collectionname: str):  # Backlog 426
-        if collectionname == 'collection':
-            failed_id = []
-            for j in collection.find():
-                list = ['articleTitle', 'bookSeriesTitle', 'bookTitle', 'chapterTitle',
-                        'keyword', 'publisherName', 'publisherLoc']
-
-                for item in list:
-                    stringnew = str(j.get(item))
-                    # try:
-                    if stringnew.endswith('.'):
-                        failed_id.append(j.get('_id'))
-                    # except:
-            #         if stringnew.endswith('et.'):
-            #             failed_id.append(j.get('_id'))
-            return failed_id

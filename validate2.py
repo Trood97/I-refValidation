@@ -1,7 +1,9 @@
+import re
+
 from config import collection2
 
 
-def validatebookpunct():   # Exceptions from book
+def validatebookpunct():  # Exceptions from book----426
     exceptions = {
         "PublisherName": [
             "Acad.", "B.V.", "B. V.", "Co.", "co.", "Corp.", "corp.", "d.o.o.", "et Cie.", "e.V.", "e. V.",
@@ -12,23 +14,25 @@ def validatebookpunct():   # Exceptions from book
         "PublisherLoc": ["U.K.", "U.S.", "U.S.A."],
         "Keyword": ["L.", "nov.", "s.l.", "sp.", "spp.", "ssp.", "sspp.", "subsp.", "subspp."]}
 
-    for i in (collection2.find({},{'_id':1,'bookSeriesTitle':1,'bookTitle':1,'chapterTitle':1,
-                                   'publisherName':1,'pubLocation':1, 'keyword':1})):
+    for i in (collection2.find({}, dict(_id=1, bookSeriesTitle=1, bookTitle=1, chapterTitle=1, publisherName=1,
+                                        pubLocation=1, keyword=1))):
 
-        for no,condition in enumerate(exceptions.get('PublisherName')):           # publishername
+        for no, condition in enumerate(exceptions.get('PublisherName')):  # publishername
             if str(i.get('publisherName')).endswith(str(condition)):
-                print(no,'validation passed pubname',i.get('_id'))
+                continue
+                # print(no,'validation passed pubname',i.get('_id'))
             else:
-                print(no,'validation failed pubname')
+                print(no, 'validation failed pubname', )
+        #
 
-        for condition2 in exceptions.get('PublisherLoc'):             #publisherloc
+        for condition2 in exceptions.get('PublisherLoc'):  # publisherloc
             if str(i.get('pubLocation')).endswith(str(condition2)):
-                print('validation passed publoc',i.get('_id'))
+                print('validation passed publoc', i.get('_id'))
             else:
                 print('validation failed publoc')
 
-        for num,condition3 in enumerate(exceptions.get('Keyword')):                #keyword
+        for num, condition3 in enumerate(exceptions.get('Keyword')):  # keyword
             if str(i.get('keyword')).endswith(str(condition3)):
-                print(num,'validation passed keyword')
+                print(num, 'validation passed keyword')
             else:
-                print(num,'validation failed keyword',i.get('_id'))
+                print(num, 'validation failed keyword', i.get('_id'))
