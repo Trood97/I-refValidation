@@ -10,10 +10,11 @@ class validation():
         today = datetime.date.today()
         year = today.year
         current_year = year
-        if int(i.get('year')) <= current_year:
+        a = int(i.get('year'))
+        if a <= current_year:
             pass
         else:
-            reason = 'Reason: year greater than the current year'
+            reason = f'Reason: year greater than the current year, Error:{a}'
             return 1, reason
 
     # Validation for page numbers
@@ -34,7 +35,7 @@ class validation():
             l = ['Jr', 'Sr', 'ber']
             for i in l:
                 if lname.endswith(i):
-                    reason = 'validation failed for suffix "jr,sr.",'
+                    reason = f'validation failed for suffix jr,sr, Error:{lname}'
                     return 1, reason
                 else:
                     pass
@@ -47,7 +48,7 @@ class validation():
             l = ['Dr.', 'Prof.']
             for a in l:
                 if re.findall(r'\b' + str(a), fname):
-                    reason = 'validation failed for preffix "Dr,Prof",'
+                    reason = f'validation failed for preffix "Dr,Prof", Error:{fname}'
                     return 1, reason
                 else:
                     pass
@@ -57,7 +58,7 @@ class validation():
         for item in i:
             stringnew = str(i.get(item))
             if stringnew.endswith(':'):
-                reason = 'failed for colon'
+                reason = f'failed for colon, Error:{stringnew}'
                 return 1, reason
             else:
                 pass
@@ -67,7 +68,7 @@ class validation():
         for item in i:
             stringnew = str(i.get(item))
             if stringnew.startswith(" ") or stringnew.endswith(" "):
-                reason = 'validation failed for white space'
+                reason = f'validation failed for white space, Error:{stringnew}'
                 return 1, reason
 
         for auth in i['authors']:
@@ -76,7 +77,7 @@ class validation():
             for item1 in lst2:
                 auth_string = str(auth.get(item1))
                 if auth_string.startswith(" ") or auth_string.endswith(" "):
-                    reason = 'white sapce validation failed for fname and lname'
+                    reason = f'white sapce validation failed for fname and lname, Error:{auth_string}'
                     return 1, reason
                 else:
                     pass
@@ -95,7 +96,7 @@ class validation():
                     pass
             if count > 1:
                 # print('validation has failed for author', check1)
-                reason = 'duplicate author found hear'
+                reason = f'duplicate author found hear, Error:{check1}'
                 return 1, reason
 
         #Validation for page numbers with "e"
@@ -104,7 +105,7 @@ class validation():
         b = str(i.get('lastPage'))
         z = "[a-z]"
         if re.findall(str(z) + r"\B", a) or re.findall(str(z) + r"\B", b):  # check for first & last page..
-            reason = 'validation failed for page number with e'
+            reason = f'validation failed for page number with e, Error:{a or b}'
             return 1, reason
         else:
             pass
@@ -114,7 +115,7 @@ class validation():
         for familyName in i['authors']:
             lname = str(familyName.get('lastname'))
             if lname == '':
-                reason = 'lastname empty'
+                reason = f'lastname empty, Error:{lname}'
                 return 1, reason
             else:
                 pass
@@ -126,7 +127,7 @@ class validation():
             prefix = ['van', 'von', 'v.', 'der', 'de', 'del']
             for i in prefix:
                 if lname.endswith(i):
-                    reason = 'validation failed for givenname '
+                    reason = f'validation failed for givenname, Error:{lname}'
                     return 1, reason
                 else:
                     pass
@@ -139,7 +140,7 @@ class validation():
             prefix = ['.']
             for i in prefix:
                 if fname.endswith(i):
-                    reason = 'validation failed for familyname trailing'
+                    reason = f'validation failed for familyname trailing, Error:{fname}'
                     return 1, reason
                 else:
                     pass
@@ -162,7 +163,7 @@ class validation():
         for item in list1:
             string1 = str(i.get(item))
             if string1.endswith('.'):
-                reason = 'validation failed for Titles.'
+                reason = (f'validation failed for Titles, Error:{string1}')
                 return 1, reason
             else:
                 pass
