@@ -1,12 +1,11 @@
 import datetime
-from config import collection, collection2
 import re
 
 
 class validation():
 
     # Validation for Publication year
-    def validateyear(self, i: dict):  # ---------------ok--388
+    def validateyear(self, i: dict):  #388
         pass
         today = datetime.date.today()
         year = today.year
@@ -18,7 +17,7 @@ class validation():
             return 1, reason
 
     # Validation for page numbers
-    def validatepagenumberseq(self, i: dict):  # -------------ok -387
+    def validatepagenumberseq(self, i: dict):  # -387
         fp1 = int(i.get('firstPage'))
         lp1 = int(i.get('lastPage'))
         if fp1 <= lp1:
@@ -28,7 +27,7 @@ class validation():
             return 1, reason
 
     # Validation for familyName contains suffix
-    def suffix(self, i: dict):  # sw ------------------------ok-430
+    def suffix(self, i: dict):  # sw -430
         for familyName in i['authors']:
             lname = str(familyName.get('lastname'))
             # print(lname)
@@ -41,7 +40,7 @@ class validation():
                     pass
 
     # Validation for "givenNames" contains honorifics info like Dr,Prof
-    def preffix(self, i: dict):  # sw ------------------ok -429
+    def preffix(self, i: dict):  # -429
         for givenName in i['authors']:
             fname = str(givenName.get('firstname'))
             # print(fname)
@@ -54,7 +53,7 @@ class validation():
                     pass
 
     # Validation for trailing punctuation colon
-    def trailing_colon_for_all(self, i: dict):  # ak-----------------ok ----431
+    def trailing_colon_for_all(self, i: dict):  # -431
         for item in i:
             stringnew = str(i.get(item))
             if stringnew.endswith(':'):
@@ -64,7 +63,7 @@ class validation():
                 pass
 
     # Validation for whitespaces
-    def white_space(self, i: dict):  # ak-----------------ok--656
+    def white_space(self, i: dict):  # ak-656
         for item in i:
             stringnew = str(i.get(item))
             if stringnew.startswith(" ") or stringnew.endswith(" "):
@@ -83,7 +82,7 @@ class validation():
                     pass
 
     # Validation for "familyName" and "givenNames" in author and editor
-    def duplicate(self, i: dict):  # sw-----------------427
+    def duplicate(self, i: dict):  #-427
         for x in i.get('authors'):
             count = 0
             check1 = str(x.get('lastname') + x.get('firstname'))
@@ -100,7 +99,7 @@ class validation():
                 return 1, reason
 
         #Validation for page numbers with "e"
-    def validate_pageno_with_e(self, i: dict):  # sb ------------------ok but skip --415
+    def validate_pageno_with_e(self, i: dict):  #  skip --415
         a = str(i.get('firstPage'))
         b = str(i.get('lastPage'))
         z = "[a-z]"
@@ -111,7 +110,7 @@ class validation():
             pass
 
     # Validation for Author name in references, familyname is mandatory
-    def familyName_mandatory(self, i: dict):  # ---------------------done,390
+    def familyName_mandatory(self, i: dict):  # -390
         for familyName in i['authors']:
             lname = str(familyName.get('lastname'))
             if lname == '':
@@ -121,7 +120,7 @@ class validation():
                 pass
 
     # Validation for "givenNames" ends with 'prefix'
-    def givennameprefix(self, i: dict):  # ak ------------ok--428
+    def givennameprefix(self, i: dict):  # --428
         for familyName in i['authors']:
             lname = str(familyName.get('lastname'))
             prefix = ['van', 'von', 'v.', 'der', 'de', 'del']
@@ -133,7 +132,7 @@ class validation():
                     pass
 
     # Validation for trailing period in familyname
-    def familytrailing(self, i: dict):  # ak ------------------ok--741
+    def familytrailing(self, i: dict):  #  -741
         for familyName in i['authors']:
             fname = str(familyName.get('firstname'))
             # print(fname)
@@ -146,7 +145,7 @@ class validation():
                     pass
 
     # Validation for trailing period in all
-    def Validation_for_trailing_end_period(self, i: dict):  # ----------------ok-426
+    def Validation_for_trailing_end_period(self, i: dict):  # -426
 
         # # if it is a journal
         # list = ['articleTitle']
@@ -163,7 +162,7 @@ class validation():
         for item in list1:
             string1 = str(i.get(item))
             if string1.endswith('.'):
-                reason = 'validation failed for book elements.'
+                reason = 'validation failed for Titles.'
                 return 1, reason
             else:
                 pass
