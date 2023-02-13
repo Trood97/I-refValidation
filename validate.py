@@ -1,11 +1,11 @@
 import datetime
 import re
-
+from config import *
 
 class validation():
 
     # Validation for Publication year
-    def validateyear(self, i: dict):  #388
+    def validateyear(self, i: dict):  # 388
         pass
         today = datetime.date.today()
         year = today.year
@@ -19,20 +19,25 @@ class validation():
 
     # Validation for page numbers
     def validatepagenumberseq(self, i: dict):  # -387
-        fp1 = int(i.get('firstPage'))
-        lp1 = int(i.get('lastPage'))
-        if fp1 <= lp1:
+        try:
+            fp1 = int(i.get('firstPage'))
+            lp1 = int(i.get('lastPage'))
+
+            if fp1 <= lp1:
+                pass
+            else:
+                reason = 'Reason:validation failed for page number'
+                return 1, reason
+        except ValueError as e:
             pass
-        else:
-            reason = 'Reason:validation failed for page number'
-            return 1, reason
+
 
     # Validation for familyName contains suffix
     def suffix(self, i: dict):  # sw -430
         for familyName in i['authors']:
             lname = str(familyName.get('lastname'))
             # print(lname)
-            l = ['Jr', 'Sr', 'ber']
+            l = ['Jr', 'Sr']
             for i in l:
                 if lname.endswith(i):
                     reason = f'validation failed for suffix jr,sr, Error:{lname}'
@@ -83,7 +88,7 @@ class validation():
                     pass
 
     # Validation for "familyName" and "givenNames" in author and editor
-    def duplicate(self, i: dict):  #-427
+    def duplicate(self, i: dict):  # -427
         for x in i.get('authors'):
             count = 0
             check1 = str(x.get('lastname') + x.get('firstname'))
@@ -99,13 +104,14 @@ class validation():
                 reason = f'duplicate author found hear, Error:{check1}'
                 return 1, reason
 
-        #Validation for page numbers with "e"
-    def validate_pageno_with_e(self, i: dict):  #  skip --415
+        # Validation for page numbers with "e"
+
+    def validate_pageno_with_e(self, i: dict):  # skip --415
         a = str(i.get('firstPage'))
         b = str(i.get('lastPage'))
         z = "[a-z]"
         if re.findall(str(z) + r"\B", a) or re.findall(str(z) + r"\B", b):  # check for first & last page..
-            reason = f'validation failed for page number with e, Error:{a or b}'
+            reason = f'validation failed for page number with e, Error:{a and b}'
             return 1, reason
         else:
             pass
@@ -133,7 +139,7 @@ class validation():
                     pass
 
     # Validation for trailing period in familyname
-    def familytrailing(self, i: dict):  #  -741
+    def familytrailing(self, i: dict):  # -741
         for familyName in i['authors']:
             fname = str(familyName.get('firstname'))
             # print(fname)
@@ -158,11 +164,16 @@ class validation():
         #         return 1, reason
         #     else:pass
         # for k in collection2.find():  # if it is book
-        list1 = ['articleTitle', 'bookSeriesTitle', 'bookTitle', 'chapterTitle', 'keyword', 'publisherName',
-                 'publisherLoc']
+        list1 = ['articleTitle','journalTitle']
         for item in list1:
             string1 = str(i.get(item))
             if string1.endswith('.'):
+                # clean = re.sub('.\Z', '', string1)  # remove last character from string
+                # # print(clean)
+                # filter = {'_id': i.get('_id')}
+                # newvalues = {'$set': {'articleTitle': clean}}
+                # if collection.update_one(filter, newvalues):
+                #     pass
                 reason = (f'validation failed for Titles, Error:{string1}')
                 return 1, reason
             else:
